@@ -119,7 +119,7 @@ void MainWindow::on_generateBtn_clicked()
 
 	// Custom charset
 	if( ui_customCharSetLine->isEnabled() &&
-			! ui_customCharSetLine->isEmpty() ){
+			! ui_customCharSetLine->text().isEmpty() ){
 		m_charset += ui_customCharSetLine->text();
 	}
 
@@ -164,7 +164,7 @@ void MainWindow::on_generateBtn_clicked()
 		url.setPath("/integers/");
 		url.addQueryItem( "num", QString::number(passLen) );
 		url.addQueryItem( "min", "0" );
-		url.addQueryItem( "max", QString::number( m_charset.size() )-1 );
+		url.addQueryItem( "max", QString::number( m_charset.size()-1 ) );
 		url.addQueryItem( "col", "1" );
 		url.addQueryItem( "base", "10" );
 		url.addQueryItem( "format", "plain" );
