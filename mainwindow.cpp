@@ -163,8 +163,8 @@ void MainWindow::on_generateBtn_clicked()
 		QUrl url("https://www.random.org");
 		url.setPath("/integers/");
 		url.addQueryItem( "num", QString::number(passLen) );
-		url.addQueryItem( "min", "1" );
-		url.addQueryItem( "max", QString::number( m_charset.size() ) );
+		url.addQueryItem( "min", "0" );
+		url.addQueryItem( "max", QString::number( m_charset.size() )-1 );
 		url.addQueryItem( "col", "1" );
 		url.addQueryItem( "base", "10" );
 		url.addQueryItem( "format", "plain" );
