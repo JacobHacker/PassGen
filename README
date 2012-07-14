@@ -28,13 +28,9 @@ The connection is sent over HTTPS, so we are protected from Man in the Middle
 (MitM) attacks and network sniffers.
 
 TODO:
-* While the program is fairly solid there needs to be more error checking,
-specifically during the HTTPS requests.
+* While the program is fairly solid (at around 200 LoC how could it not be?)
+there needs to be more error checking, specifically during the HTTPS requests.
 
 * Test portability, this _should_ work on nearly every OS out there, since
 it's using Qt and Boost as it's Framework, but it would be interesting if it
-could be ported to things such as the iPhone, Android, ... 
-
-* Polish the GUI constraints MIN resizing.
-
-* Screenshots
+could be ported to other devices, such as the iPhone, Android, ...
