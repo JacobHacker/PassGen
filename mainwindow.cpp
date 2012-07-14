@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 	////////////////////////
-	// Set GUI to variables
+	// Grab widgets from ui form
 	////////////////////////
 	ui_mainGridLayout = qFindChild<QGridLayout*>(this, "mainGridLayout");
 	ui_randomLine = qFindChild<QLineEdit*>(this, "randomLine");
@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	m_downloadingBar = new QProgressBar;
 
+	// Add options to combo box
 	ui_algorithmCombo->addItem("Random.org");
 	ui_algorithmCombo->addItem("Mersenne Twister");
 	ui_algorithmCombo->addItem("rand()");
@@ -117,7 +118,8 @@ void MainWindow::on_generateBtn_clicked()
 	}
 
 	// Custom charset
-	if( ui_customCharSetLine->isEnabled() ){
+	if( ui_customCharSetLine->isEnabled() &&
+			! ui_customCharSetLine->isEmpty() ){
 		m_charset += ui_customCharSetLine->text();
 	}
 
