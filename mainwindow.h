@@ -26,7 +26,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
+public slots:
     void on_generateBtn_clicked();
 	void handleRandomOrgReply();
 	void customCharsetCheckPressed();
