@@ -12,6 +12,7 @@ HEADERS  += mainwindow.h
 FORMS    += mainwindow.ui
 
 OTHER_FILES += \
-    README \
     foreign-lang-charsets.txt \
-    INSTALL.md
+    INSTALL.md \
+    README.md \
+    CHARSETS.md
