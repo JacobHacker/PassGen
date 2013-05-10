@@ -13,4 +13,5 @@ FORMS    += mainwindow.ui
 
 OTHER_FILES += \
     README \
-    foreign-lang-charsets.txt
+    foreign-lang-charsets.txt \
+    INSTALL.md
