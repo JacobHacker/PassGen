@@ -13,6 +13,8 @@
 #include <QProgressBar>
 #include <QCheckBox>
 #include <QGridLayout>
+#include <QPushButton>
+#include <QSignalMapper>
 
 namespace Ui {
     class MainWindow;
@@ -26,10 +28,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:
+private slots:
     void on_generateBtn_clicked();
-	void handleRandomOrgReply();
+    void handleRandomOrgReply();
 	void customCharsetCheckPressed();
+    void appendBtnClicked();
+    void spinData();
 private:
     Ui::MainWindow *ui;
 
@@ -46,6 +50,10 @@ private:
 	QProgressBar *m_downloadingBar;
 	QLineEdit *ui_customCharSetLine;
 
+    QPushButton *ui_generateBtn;
+    QPushButton *ui_appendBtn;
+    QPushButton *ui_spinBtn;
+
 	//networking
 	QNetworkAccessManager *m_netManager;
 	QNetworkReply *m_netReply;
@@ -53,6 +61,12 @@ private:
 	// Random/charset
 	boost::mt19937 m_mTwister;
 	QString m_charset;
+
+    // Main functionality
+    void genPass(int append);
+
+    // Append to the current password
+    bool m_append;
 };
 
 #endif // MAINWINDOW_H
