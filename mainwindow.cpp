@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QTime>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QMessageBox>
 #include <QSignalMapper>
 
@@ -17,11 +18,8 @@ namespace CharSet{
 	QString upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	QString lowerCase = "abcdefghijklmnopqrstuvwxyz";
 	QString numbers = "0123456789";
-	// Note, this is not the entire puctuation list, because login boxes SHOULD
-	// filter out some of the characters to prevent SQL injection.
-	// TODO: Make sure this is an accurate list
-	// http://tekkna.org/article/sql-injection
-	QString punct = ",.!_@$^&*()_";
+    // Some sites may filter out certain characters
+    QString punct = "!@#$%^&*()_+{}|:\"<>?~-=";
 }
 
 
@@ -31,36 +29,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-	////////////////////////
-	// Grab widgets from ui form
-	////////////////////////
-	ui_mainGridLayout = qFindChild<QGridLayout*>(this, "mainGridLayout");
-	ui_randomLine = qFindChild<QLineEdit*>(this, "randomLine");
-	ui_lengthSpin = qFindChild<QSpinBox*>(this, "lengthSpin");
-	ui_algorithmCombo = qFindChild<QComboBox*>(this, "algorithmCombo");
-	ui_lettersCheck = qFindChild<QCheckBox*>(this, "lettersCheck");
-	ui_numbersCheck = qFindChild<QCheckBox*>(this, "numbersCheck");
-	ui_punctCheck = qFindChild<QCheckBox*>(this, "punctCheck");
-	ui_customCheck = qFindChild<QCheckBox*>(this, "customCheck");
-	ui_customCharSetLine = qFindChild<QLineEdit*>(this, "customCharSetLine");
-	ui_statusBar = qFindChild<QStatusBar*>(this, "statusBar");
-
-    ui_generateBtn = qFindChild<QPushButton*>(this, "generateBtn");
-    ui_appendBtn = qFindChild<QPushButton*>(this, "appendBtn");
-    ui_spinBtn = qFindChild<QPushButton*>(this, "spinBtn");
-
 	m_downloadingBar = new QProgressBar;
 
 	// Add options to combo box
-	ui_algorithmCombo->addItem("Random.org");
-	ui_algorithmCombo->addItem("Mersenne Twister");
-	ui_algorithmCombo->addItem("rand()");
+    ui->algorithmCombo->addItem("Random.org");
+    ui->algorithmCombo->addItem("Mersenne Twister");
+    ui->algorithmCombo->addItem("rand()");
 
     // Custom charset checkbox
-	connect(ui_customCheck, SIGNAL(stateChanged(int)),
+    connect(ui->customCheck, SIGNAL(stateChanged(int)),
 			this, SLOT( customCharsetCheckPressed() ));
     // Append Button
-    connect(ui_appendBtn, SIGNAL(clicked()),
+    connect(ui->appendBtn, SIGNAL(clicked()),
             this, SLOT(appendBtnClicked()));
     // Spin Button
     connect(ui->spinBtn, SIGNAL(clicked()),
@@ -82,19 +62,19 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::customCharsetCheckPressed(){
-	if( ui_customCheck->isChecked() == true ){
-		ui_customCharSetLine->setEnabled( true );
+    if( ui->customCheck->isChecked() == true ){
+        ui->customCharSetLine->setEnabled( true );
 	}else{
-		ui_customCharSetLine->setEnabled( false );
+        ui->customCharSetLine->setEnabled( false );
 	}
 }
 
 void MainWindow::handleRandomOrgReply(){
 	if( m_netReply ){
-		uint passLen = ui_lengthSpin->value();
+        uint passLen = ui->lengthSpin->value();
 
 		if( m_netReply->error() == QNetworkReply::NoError ){
-			ui_statusBar->showMessage("Finished.", 3);
+            ui->statusBar->showMessage("Finished.", 3);
 
 			QString password("");
 			for( uint i=0; i<passLen; ++i ){
@@ -102,43 +82,37 @@ void MainWindow::handleRandomOrgReply(){
 				password[i] = m_charset[num];
 			}
             if(m_append == true) password = password + ui->randomLine->text();
-			ui_randomLine->setText( password );
+            ui->randomLine->setText( password );
 		}
 	}
 }
 
 void MainWindow::genPass(int append){
-    uint passLen = ui_lengthSpin->value();
-    Q_ASSERT(passLen != 0);
-    if(passLen == 0){
-        QMessageBox msgBox;
-        msgBox.setText("Password length must be greater than 0.");
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-        return;
-    }
+    uint passLen = ui->lengthSpin->value();
+    Q_ASSERT(passLen > 0);
 
     ////////////////////
-    // Generate Charset
+    // Populate Charset
     ////////////////////
     m_charset.clear();
-    if( ui_lettersCheck->isChecked() ){
+
+    if( ui->lettersCheck->isChecked() ){
         m_charset += CharSet::lowerCase;
         m_charset += CharSet::upperCase;
     }
 
-    if( ui_numbersCheck->isChecked() ){
+    if( ui->numbersCheck->isChecked() ){
         m_charset += CharSet::numbers;
     }
 
-    if( ui_punctCheck->isChecked() ){
+    if( ui->punctCheck->isChecked() ){
         m_charset += CharSet::punct;
     }
 
     // Custom charset
-    if( ui_customCharSetLine->isEnabled() &&
-            ! ui_customCharSetLine->text().isEmpty() ){
-        m_charset += ui_customCharSetLine->text();
+    if( ui->customCharSetLine->isEnabled() &&
+            ! ui->customCharSetLine->text().isEmpty() ){
+        m_charset += ui->customCharSetLine->text();
     }
 
     // If no check boxes are down, quit
@@ -150,24 +124,24 @@ void MainWindow::genPass(int append){
         return;
     }
 
-    ui_statusBar->clearMessage();
+    ui->statusBar->clearMessage();
 
     //////////
     // Rand()
     //////////
-    if(ui_algorithmCombo->currentText() == "rand()"){
+    if(ui->algorithmCombo->currentText() == "rand()"){
         QString password("");
 
         for( uint i=0; i<passLen; ++i ){
             password[i] = m_charset[rand()%m_charset.size()];
         }
         if(append == true) password = password + ui->randomLine->text();
-        ui_randomLine->setText( password );
+        ui->randomLine->setText( password );
     }
     ////////////
     // Mersenne
     ////////////
-    else if( ui_algorithmCombo->currentText() == "Mersenne Twister" ){
+    else if( ui->algorithmCombo->currentText() == "Mersenne Twister" ){
         QString password("");
 
         boost::uniform_int<> range( 0, m_charset.size()-1 );
@@ -178,26 +152,29 @@ void MainWindow::genPass(int append){
             password[i] = m_charset[gen()];
         }
         if(append == true) password = password + ui->randomLine->text();
-        ui_randomLine->setText( password );
+        ui->randomLine->setText( password );
     }
     //////////////////
     // 1/2 Random.org
     //////////////////
-    else if(ui_algorithmCombo->currentText() == "Random.org"){
+    else if(ui->algorithmCombo->currentText() == "Random.org"){
         QUrl url("https://www.random.org");
         url.setPath("/integers/");
-        url.addQueryItem( "num", QString::number(passLen) );
-        url.addQueryItem( "min", "0" );
-        url.addQueryItem( "max", QString::number( m_charset.size()-1 ) );
-        url.addQueryItem( "col", "1" );
-        url.addQueryItem( "base", "10" );
-        url.addQueryItem( "format", "plain" );
-        url.addQueryItem( "rnd", "new" );
+        QUrlQuery q;
+        q.addQueryItem( "num", QString::number(passLen) );
+        q.addQueryItem( "min", "0" );
+        q.addQueryItem( "max", QString::number( m_charset.size()-1 ) );
+        q.addQueryItem( "col", "1" );
+        q.addQueryItem( "base", "10" );
+        q.addQueryItem( "format", "plain" );
+        q.addQueryItem( "rnd", "new" );
+
+        url.setQuery(q);
 
         // Prepare request
         QNetworkRequest req( url );
 
-        ui_statusBar->showMessage( "Downloading random numbers ..." );
+        ui->statusBar->showMessage( "Downloading random numbers ..." );
         m_netReply = m_netManager->get( req );
         // Hacky and annoying
         m_append = append;
@@ -215,7 +192,7 @@ void MainWindow::appendBtnClicked(){
 }
 
 void MainWindow::spinData(){
-    QString text = ui_randomLine->text();
+    QString text = ui->randomLine->text();
 
     uint textSize = text.size();
     if(textSize == 0){

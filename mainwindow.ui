@@ -59,6 +59,12 @@
            <property name="toolTip">
             <string>8 characters or more is recommended </string>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>999</number>
+           </property>
            <property name="value">
             <number>10</number>
            </property>
