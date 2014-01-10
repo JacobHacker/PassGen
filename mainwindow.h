@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <boost/random/mersenne_twister.hpp>
+#include <random>
 
 #include <QMainWindow>
 #include <QLineEdit>
@@ -15,6 +15,8 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QSignalMapper>
+
+typedef std::mt19937 RngEngine;
 
 namespace Ui {
     class MainWindow;
@@ -37,29 +39,16 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-	// widgets
-	QGridLayout *ui_mainGridLayout;
-	QLineEdit *ui_randomLine;
-	QSpinBox *ui_lengthSpin;
-	QComboBox *ui_algorithmCombo;
-	QCheckBox *ui_lettersCheck;
-	QCheckBox *ui_numbersCheck;
-	QCheckBox *ui_punctCheck;
-	QCheckBox *ui_customCheck;
-	QStatusBar *ui_statusBar;
-	QProgressBar *m_downloadingBar;
-	QLineEdit *ui_customCharSetLine;
+    QProgressBar *m_downloadingBar;
 
-    QPushButton *ui_generateBtn;
-    QPushButton *ui_appendBtn;
-    QPushButton *ui_spinBtn;
-
-	//networking
+    //networking
 	QNetworkAccessManager *m_netManager;
 	QNetworkReply *m_netReply;
 
 	// Random/charset
-	boost::mt19937 m_mTwister;
+    std::random_device m_rd;
+    RngEngine m_rngEngine;
+
 	QString m_charset;
 
     // Main functionality

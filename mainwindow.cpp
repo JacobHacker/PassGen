@@ -1,11 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-
+#include <random>
 #include <stdlib.h>
-
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/variate_generator.hpp>
 
 #include <QDebug>
 #include <QTime>
@@ -13,6 +7,10 @@
 #include <QUrlQuery>
 #include <QMessageBox>
 #include <QSignalMapper>
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 
 namespace CharSet{
 	QString upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -25,7 +23,8 @@ namespace CharSet{
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_rngEngine(m_rd())
 {
     ui->setupUi(this);
 
@@ -50,9 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Random Number seeds
 	///////////////////////
 	srandom( time(0) );
-	m_mTwister.seed( time(0) );
 
-	// Networking stuff
 	m_netManager = new QNetworkAccessManager;
 }
 
@@ -142,17 +139,16 @@ void MainWindow::genPass(int append){
     // Mersenne
     ////////////
     else if( ui->algorithmCombo->currentText() == "Mersenne Twister" ){
-        QString password("");
-
-        boost::uniform_int<> range( 0, m_charset.size()-1 );
-        boost::variate_generator<boost::mt19937&, boost::uniform_int<> >
-                gen(m_mTwister, range);
-
-        for( uint i=0; i<passLen; ++i ){
-            password[i] = m_charset[gen()];
+        std::uniform_int_distribution<> dist(0, m_charset.size()-1);
+        QString rChars;
+        rChars.resize(passLen);
+        for(uint i=0; i<passLen; ++i){
+            rChars[i] = m_charset[dist(m_rngEngine)];
         }
-        if(append == true) password = password + ui->randomLine->text();
-        ui->randomLine->setText( password );
+        if(append == true)
+            rChars = rChars + ui->randomLine->text();
+        ui->randomLine->setText(rChars);
+
     }
     //////////////////
     // 1/2 Random.org
